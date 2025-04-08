@@ -1,0 +1,20 @@
+/* 
+9. Which channel brought the most gross sales in 2021 and its contribution percentage?
+   Output: channel, gross_sales_mln, percentage
+*/
+
+-- Top-performing sales channel in 2021 with contribution %
+WITH channels AS (
+    SELECT channel, 
+           (SUM(sold_quantity * gross_price) / 1000000) AS gross_sales_mln
+    FROM fact_sales_monthly fm 
+    JOIN fact_gross_price fp ON fm.product_code = fp.product_code
+    JOIN dim_customer dc ON fm.customer_code = dc.customer_code
+    WHERE fm.fiscal_year = 2021 
+    GROUP BY channel 
+)
+SELECT 
+    channel, 
+    gross_sales_mln, 
+    ROUND(gross_sales_mln * 100 / SUM(gross_sales_mln) OVER (), 2) AS pct_contributions 
+FROM channels;
