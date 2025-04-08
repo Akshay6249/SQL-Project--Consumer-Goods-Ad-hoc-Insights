@@ -1,0 +1,16 @@
+
+/* 
+6. Generate a report with top 5 customers in India (2021) by average high pre_invoice_discount_pct.
+   Output: customer_code, customer, average_discount_percentage
+*/
+
+-- Top 5 customers in India (2021) by average pre-invoice discount
+SELECT dc.customer, 
+       dc.customer_code, 
+       ROUND(AVG(fp.pre_invoice_discount_pct) * 100, 2) AS avg_discount_pct  
+FROM fact_pre_invoice_deductions fp 
+JOIN dim_customer dc ON fp.customer_code = dc.customer_code
+WHERE fiscal_year = 2021 AND market = "India"
+GROUP BY dc.customer 
+ORDER BY avg_discount_pct DESC 
+LIMIT 5;
