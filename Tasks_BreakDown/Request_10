@@ -1,0 +1,25 @@
+
+/* 
+10. Get Top 3 products in each division by total_sold_quantity in 2021.
+   Output: division, product_code, product, total_sold_quantity, rank_order
+*/
+
+-- Top 3 products per division based on total sold quantity
+WITH ranked_products AS (
+    WITH top_products AS (
+        SELECT fm.product_code, 
+               dp.product, 
+               dp.division, 
+               SUM(sold_quantity) AS total_sold_quantity
+        FROM fact_sales_monthly fm 
+        JOIN dim_product dp ON fm.product_code = dp.product_code
+        WHERE fiscal_year = 2021 
+        GROUP BY fm.product_code, dp.division
+    )
+    SELECT *, 
+           RANK() OVER (PARTITION BY division ORDER BY total_sold_quantity DESC) AS rank_order 
+    FROM top_products
+)
+SELECT * 
+FROM ranked_products 
+WHERE rank_order IN (1,2,3);
