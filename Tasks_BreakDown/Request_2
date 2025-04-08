@@ -1,0 +1,19 @@
+/* 
+2. What is the percentage of unique product increase in 2021 vs. 2020?
+   The final output contains: unique_products_2020, unique_products_2021, percentage_chg
+*/
+
+-- Calculate total unique products per year and compare 2020 with 2021
+WITH cte AS (
+    SELECT COUNT(DISTINCT product_code) AS total_products, fiscal_year  
+    FROM fact_sales_monthly
+    GROUP BY fiscal_year
+)
+SELECT 
+    a.total_products AS unique_products_2020, 
+    b.total_products AS unique_products_2021, 
+    (b.total_products - a.total_products) AS newly_launched_prod,
+    ROUND((b.total_products - a.total_products) / a.total_products * 100, 2) AS pct_change  
+FROM cte a 
+LEFT JOIN cte b ON a.fiscal_year + 1 = b.fiscal_year
+LIMIT 1;
