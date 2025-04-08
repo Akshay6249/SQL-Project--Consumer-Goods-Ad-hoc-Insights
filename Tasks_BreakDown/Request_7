@@ -1,0 +1,16 @@
+/* 
+7. Get gross sales amount for customer “Atliq Exclusive” per month.
+   Output: Year, Month, Gross sales Amount
+*/
+
+-- Monthly gross sales for "Atliq Exclusive"
+SELECT 
+    YEAR(date) AS year, 
+    MONTH(date) AS month, 
+    SUM(sold_quantity * gross_price) AS gross_sales_amount
+FROM fact_sales_monthly fs 
+JOIN fact_gross_price fp ON fs.product_code = fp.product_code AND fs.fiscal_year = fp.fiscal_year 
+JOIN dim_customer dc ON fs.customer_code = dc.customer_code
+WHERE customer = "Atliq Exclusive"
+GROUP BY year, month 
+ORDER BY year, month;
