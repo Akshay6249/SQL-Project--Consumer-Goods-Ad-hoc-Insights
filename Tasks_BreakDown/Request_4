@@ -1,0 +1,25 @@
+/* 
+4. Follow-up: Which segment had the most increase in unique products in 2021 vs 2020?
+   Output: segment, product_count_2020, product_count_2021, difference
+*/
+
+-- Compare product count per segment between 2020 and 2021
+WITH tot_products AS (
+    SELECT COUNT(DISTINCT fs.product_code) AS total_products, 
+           fiscal_year, 
+           segment
+    FROM fact_sales_monthly fs 
+    JOIN dim_product dp ON fs.product_code = dp.product_code
+    GROUP BY fiscal_year, segment
+)
+SELECT 
+    a.segment, 
+    a.total_products AS unique_products_2020, 
+    b.total_products AS unique_products_2021, 
+    b.total_products - a.total_products AS difference,
+    ROUND((b.total_products - a.total_products) / a.total_products * 100, 2) AS pct_change
+FROM tot_products a 
+LEFT JOIN tot_products b 
+ON a.fiscal_year + 1 = b.fiscal_year AND a.segment = b.segment
+WHERE b.total_products IS NOT NULL 
+ORDER BY pct_change DESC;
