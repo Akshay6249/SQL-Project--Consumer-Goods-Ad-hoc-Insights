@@ -1,0 +1,15 @@
+/* 
+5. Get the products that have the highest and lowest manufacturing costs.
+   Output: product_code, product, manufacturing_cost
+*/
+
+-- Get max and min manufacturing cost products
+(SELECT dp.product_code, dp.product, fm.manufacturing_cost 
+ FROM fact_manufacturing_cost fm 
+ JOIN dim_product dp ON fm.product_code = dp.product_code  
+ WHERE fm.manufacturing_cost = (SELECT MAX(manufacturing_cost) FROM fact_manufacturing_cost))
+UNION ALL
+(SELECT dp.product_code, dp.product, fm.manufacturing_cost 
+ FROM fact_manufacturing_cost fm 
+ JOIN dim_product dp ON fm.product_code = dp.product_code  
+ WHERE fm.manufacturing_cost = (SELECT MIN(manufacturing_cost) FROM fact_manufacturing_cost));
